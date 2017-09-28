@@ -1,22 +1,28 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';  
+import React from 'react';
 
-function ActionLink() {
-  function handleClick(e) {
-            var l = document.getElementById(logo);
-            var adur = l.style.animationDuration;
-            e==0 ? adur += 10 + 's' : adur -= 10 + 's' ;
-            l.style.animationDuration = adur;
-        }
+// здесь не совсем оптимальный вариант, так как при каждом render мы будем создавать две новых функции
+// если использовать class component, можно сохранить ссылки на два метода в конструкторе
+// и обращаться внутри к текущим props.value, переданным свыше
+function getHandleClick(value, setValue, shouldIncrement) {
+  // используем String.match, чтобы разбить строку на подстроки
+  // первый элемент - полное совпадение, второй - первая скобка, третий - вторая скобка
+  const [_, numberString, unit] = value.match(/^(\d+)(\w+)$/); // eslint-disable-line
+  const number = Number(numberString);
+  return function() {
+    // здесь снова собираеим строку, например '9s', из (10 - 1 = 9) и ('s')
+    setValue(`${shouldIncrement ? number + 1 : number - 1}${unit}`); 
+  }
+}
+
+function ActionLink(props) {
   return (
     <div>
-        <button className = "SimpleButton" onClick={handleClick(0)}> Slower! </button>
-        <button className = "SimpleButton" onClick={handleClick(1)}> Faster! </button>
+        <button className = "SimpleButton" onClick={getHandleClick(props.value, props.onChange, true)}> Slower! </button>
+        <button className = "SimpleButton" onClick={getHandleClick(props.value, props.onChange, false)}> Faster! </button>
     </div> 
   );
 }
             
-
+export default ActionLink;
 
             
